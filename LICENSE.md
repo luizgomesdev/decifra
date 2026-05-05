@@ -1,113 +1,90 @@
-Licença Proprietária — Todos os Direitos Reservados
+# Proprietary License — All Rights Reserved
 
-Copyright © 2026 Luiz Felipe Alves Gomes. Todos os direitos reservados.
+**Copyright © 2026 Luiz Felipe Alves Gomes. All rights reserved.**
 
-Esta obra (incluindo, sem se limitar a, documentação, arquitetura, diagramas,
-metodologia, decisões técnicas e quaisquer códigos derivados) é protegida pela
-Lei nº 9.610/1998 (Lei de Direitos Autorais) e pela Lei nº 9.609/1998 (Lei do
-Software) da República Federativa do Brasil.
+This work, including but not limited to documentation, architecture, diagrams, methodology, technical decisions, and any derivative source code (the "Work"), is the exclusive property of Luiz Felipe Alves Gomes (the "Author") and is protected under:
 
-================================================================================
-1. AUTORIA
-================================================================================
+- Lei nº 9.610/1998 (Brazilian Copyright Law)
+- Lei nº 9.609/1998 (Brazilian Software Law)
+- International copyright treaties applicable to the Federative Republic of Brazil
 
-Autor: Luiz Felipe Alves Gomes
-Identificação acadêmica: RM 565151
-Instituição de submissão acadêmica: FIAP — Faculdade de Informática e
-Administração Paulista
-Curso: Inteligência Artificial — 2º ano, Turma A (2TIAOA, 2026/1)
-Atividade: Enterprise Challenge DASA, Sprint 1, Fase 3
-Data de criação: 2026-05-04
+No license is granted by this document, except as explicitly stated in Section 4 below.
 
-================================================================================
-2. ESCOPO DA SUBMISSÃO ACADÊMICA
-================================================================================
+---
 
-A submissão desta obra à FIAP, no contexto do Enterprise Challenge realizado
-em parceria com a empresa Diagnósticos da América S.A. (DASA), tem finalidade
-EXCLUSIVAMENTE AVALIATIVA, vinculada à atividade pedagógica do curso.
+## 1. Authorship
 
-A submissão NÃO CONSTITUI:
+| Field | Value |
+| --- | --- |
+| Author | Luiz Felipe Alves Gomes |
+| Academic ID | RM 565151 |
+| Institution | FIAP — Faculdade de Informática e Administração Paulista |
+| Course | Inteligência Artificial · 2º ano · Turma A · 2TIAOA · 2026/1 |
+| Activity | Enterprise Challenge DASA · Sprint 1 · Fase 3 |
+| Date of creation | 2026-05-04 |
 
-  (a) Transferência de propriedade intelectual ou direitos autorais;
-  (b) Licença de uso, reprodução, distribuição ou modificação;
-  (c) Autorização para incorporação, parcial ou integral, em qualquer produto,
-      serviço, plataforma, sistema ou solução de natureza comercial;
-  (d) Autorização para incorporação em produtos, serviços ou plataformas de
-      natureza não-comercial sem consentimento prévio do autor;
-  (e) Autorização para implementação por terceiros;
-  (f) Cessão de quaisquer direitos sobre arquitetura, decisões técnicas,
-      metodologia, fluxos, diagramas ou ideias descritas nesta obra.
+## 2. Scope of Submission
 
-================================================================================
-3. RESERVA DE DIREITOS
-================================================================================
+The submission of this Work to FIAP, in the context of the Enterprise Challenge conducted in partnership with Diagnósticos da América S.A. (DASA), is made for **academic evaluation purposes only**.
 
-O autor reserva o direito de:
+This submission **does not constitute**:
 
-  (a) Desenvolver esta solução de forma independente;
-  (b) Comercializar esta solução por conta própria ou via empresa de sua
-      titularidade;
-  (c) Licenciar esta solução para terceiros, em termos a serem definidos;
-  (d) Buscar registro formal junto a órgãos competentes (INPI, Biblioteca
-      Nacional, Cartório de Títulos e Documentos, ou equivalentes);
-  (e) Atuar judicialmente em caso de uso não autorizado.
+a) Transfer of intellectual property or copyright;
+b) License to use, reproduce, distribute, or modify the Work;
+c) Authorization to incorporate the Work, in whole or in part, into any commercial product, service, platform, system, or solution;
+d) Authorization to incorporate the Work into non-commercial products without prior written consent of the Author;
+e) Authorization for implementation by third parties;
+f) Assignment of any rights over architecture, technical decisions, methodology, flows, diagrams, or ideas described herein.
 
-================================================================================
-4. ORIENTAÇÃO ACADÊMICA DA PRÓPRIA INSTITUIÇÃO
-================================================================================
+## 3. Reservation of Rights
 
-A FIAP, no enunciado do próprio Challenge, orienta:
+The Author expressly reserves the right to:
 
-  "A FIAP recomenda que, se o grupo pretende ir para além dessa simulação de
-   atendimento de clientes reais por meio do programa Challenge Sprint, a
-   ideia seja mantida em sigilo e não seja aplicada nas entregas desse
-   enunciado."
+a) Develop this solution independently;
+b) Commercialize this solution directly or through entities under his ownership;
+c) License this solution to third parties under terms to be defined;
+d) Pursue formal registration with competent authorities (INPI, Biblioteca Nacional, or equivalent);
+e) Pursue legal action against unauthorized use.
 
-A presente entrega é submetida em observância a essa orientação, com nível de
-detalhamento adequado à avaliação acadêmica e com proteção explícita aos
-direitos do autor.
+## 4. Permitted Use
 
-================================================================================
-5. USO PERMITIDO NESTE CONTEXTO
-================================================================================
+Within the academic submission context, the following uses are **permitted**:
 
-Está PERMITIDO, no contexto desta submissão acadêmica:
+a) Reading by FIAP-designated evaluators, tutors, and faculty;
+b) Evaluation for the purpose of academic grading;
+c) Pedagogical discussion within an educational environment;
+d) Academic citation with proper attribution.
 
-  (a) Leitura por avaliadores, tutores e professores da FIAP designados;
-  (b) Avaliação para fins de atribuição de nota acadêmica;
-  (c) Discussão pedagógica em ambiente educacional;
-  (d) Citação acadêmica com atribuição apropriada de autoria.
+## 5. Prohibited Use
 
-Está EXPRESSAMENTE PROIBIDO, sem autorização escrita prévia do autor:
+Without prior written authorization from the Author, the following uses are **expressly prohibited**:
 
-  (a) Reprodução total ou parcial fora do contexto avaliativo;
-  (b) Distribuição a terceiros não envolvidos na avaliação;
-  (c) Incorporação em produtos, serviços ou processos comerciais;
-  (d) Uso para fins de pesquisa, desenvolvimento ou treinamento que resulte
-      em produto, serviço ou propriedade intelectual de terceiros;
-  (e) Uso por DASA, Genera, suas subsidiárias, afiliadas, parceiros,
-      fornecedores ou contratados, em qualquer iniciativa comercial,
-      experimental ou de pesquisa.
+a) Total or partial reproduction outside the evaluation context;
+b) Distribution to third parties not involved in the academic evaluation;
+c) Incorporation into commercial products, services, or processes;
+d) Use for research, development, or training purposes that result in third-party products, services, or intellectual property;
+e) Use by DASA, Genera, their subsidiaries, affiliates, partners, suppliers, or contractors in any commercial, experimental, or research initiative.
 
-================================================================================
-6. CONTATO PARA LICENCIAMENTO
-================================================================================
+## 6. Acknowledgment of Institutional Guidance
 
-Interesse em licenciamento, parceria, aquisição ou colaboração comercial
-deve ser direcionado ao autor, em comunicação formal, por escrito.
+This proprietary protection is consistent with the guidance provided by FIAP in the Enterprise Challenge brief:
 
-E-mail: 68123616+luizgomesdev@users.noreply.github.com
+> "A FIAP recomenda que, se o grupo pretende ir para além dessa simulação de atendimento de clientes reais por meio do programa Challenge Sprint, a ideia seja mantida em sigilo e não seja aplicada nas entregas desse enunciado."
 
-================================================================================
-7. DISPOSIÇÕES FINAIS
-================================================================================
+The Work is submitted at a level of detail appropriate for academic evaluation, with the Author's rights explicitly reserved.
 
-Esta licença é regida pela legislação brasileira. Qualquer disputa decorrente
-desta licença será dirimida no foro da comarca de Belo Horizonte, Minas
-Gerais, Brasil.
+## 7. Disclaimer
 
-A invalidade ou inexequibilidade de qualquer disposição desta licença não
-afetará a validade ou exequibilidade das demais disposições.
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS IN THE WORK.
 
-================================================================================
+## 8. Governing Law
+
+This license is governed by the laws of the Federative Republic of Brazil. Any dispute arising from this license shall be resolved in the courts of Belo Horizonte, Minas Gerais, Brazil.
+
+The invalidity or unenforceability of any provision shall not affect the validity or enforceability of the remaining provisions.
+
+## 9. Contact for Licensing
+
+Inquiries regarding licensing, partnership, acquisition, or commercial collaboration must be directed to the Author in formal written communication.
+
+**Email:** 68123616+luizgomesdev@users.noreply.github.com
