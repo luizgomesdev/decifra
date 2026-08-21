@@ -20,8 +20,9 @@ No license is granted by this document, except as explicitly stated in Section 4
 | Academic ID | RM 565151 |
 | Institution | FIAP — Faculdade de Informática e Administração Paulista |
 | Course | Inteligência Artificial · 2º ano · Turma A · 2TIAOA · 2026/1 |
-| Activity | Enterprise Challenge DASA · Sprint 1 · Fase 3 |
+| Activity | Enterprise Challenge DASA · Sprints 1 to 3 |
 | Date of creation | 2026-05-04 |
+| Latest submission | 2026-08 (Sprint 3) |
 
 ## 2. Scope of Submission
 

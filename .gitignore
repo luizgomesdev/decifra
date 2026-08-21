@@ -1,5 +1,6 @@
-# Specs internas: artefato de processo, não fazem parte da entrega
+# Artefatos internos de processo: não fazem parte da entrega
 .spec/
+CLAUDE.md
 
 # Env
 .env
