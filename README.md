@@ -1,222 +1,119 @@
 # Decifra
 
-Proposta conceitual de camada de IA para acessibilidade de relatórios genéticos da Genera (DASA).
+Camada de IA que traduz o relatório genético da Genera para linguagem que o paciente entende, sem perder a fidelidade ao documento original.
 
-> Enterprise Challenge DASA · FIAP · IA · Fase 3 · Sprint 1
+> Enterprise Challenge DASA · FIAP · Graduação em IA
 
-> ⚠️ **Aviso de propriedade intelectual.** Esta entrega contém material de natureza acadêmica, registrada em repositório com data e autoria. Ver seção [Propriedade intelectual](#propriedade-intelectual) ao final.
-
----
-
-## Sumário
-
-1. [O problema](#o-problema)
-2. [A solução em alto nível](#a-solução-em-alto-nível)
-3. [Quem usa](#quem-usa)
-4. [Visão geral da arquitetura](#visão-geral-da-arquitetura)
-5. [Governança e compliance](#governança-e-compliance)
-6. [Roadmap](#roadmap)
-7. [Propriedade intelectual](#propriedade-intelectual)
-8. [Repositório](#repositório)
+> ⚠️ Projeto acadêmico com **dados sintéticos**. Não é produto, não é dispositivo médico e não substitui avaliação profissional. Ver [Governança](docs/governance.md).
 
 ---
 
 ## O problema
 
-A Genera entrega informação genética de alto valor em **PDFs longos com linguagem técnica densa**.
+A Genera entrega informação genética de alto valor em PDFs longos, com linguagem técnica e tabelas densas. O paciente recebe e não consegue usar para decisão: não sabe o que é predisposição, confunde risco relativo com certeza, e não tem a quem perguntar às onze da noite.
 
-Resultado prático:
+A dor não é do exame. É da **interface** com o conhecimento que o exame produziu.
 
-- O paciente recebe e não consegue usar para decisão.
-- O clínico gasta tempo em parsing manual.
-- A informação fica congelada no documento.
+## O que o sistema faz
 
-A dor não é de exame, é de **interface** com o conhecimento gerado pelo exame.
+1. Lê o PDF do laudo e o transforma em dado estruturado, preservando a página de origem de cada achado
+2. Indexa cada achado para busca semântica, isolado por paciente
+3. Responde perguntas em linguagem simples, sempre citando de onde a resposta veio
+4. Organiza tudo num painel com riscos, ancestralidade, características e farmacogenética
+5. Recusa o que não pode responder, em vez de improvisar
 
----
+O princípio que orienta tudo: **a IA não substitui o médico**. Ela apoia o entendimento e encaminha ao profissional.
 
-## A solução em alto nível
+## Como rodar
 
-Decifra é uma camada conversacional sobre o relatório individual. Três blocos:
+Pré-requisitos: Docker, [uv](https://docs.astral.sh/uv/), Node 20+ e pnpm.
 
-| Bloco | Função |
-|---|---|
-| **Ingestão** | Laudo é processado e indexado para consulta |
-| **Conversa** | Usuário pergunta em linguagem natural, recebe resposta com referência |
-| **Dashboard** | Achados organizados por categoria clínica |
+```bash
+# 1. Infraestrutura
+docker compose up -d                  # Qdrant e Postgres
 
-### Princípio de produto
+# 2. Configuração
+cp .env.example .env                  # preencha OPENAI_API_KEY
 
-> A IA aqui **não substitui o médico**. Ela apoia o entendimento e encaminha para o profissional adequado.
+# 3. Laudos sintéticos e ingestão
+cd apps/api
+uv sync
+uv run python ../../scripts/generate_reports.py   # gera os PDFs
+uv run python ../../scripts/ingest.py             # PDF → JSON → Qdrant
 
-### Modos de voz
+# 4. Backend
+uv run uvicorn decifra.main:app --reload          # http://localhost:8000
 
-A interface oferece tom adaptado ao perfil de quem consulta (paciente em linguagem acessível, clínico com terminologia técnica).
-
----
-
-## Quem usa
-
-### Paciente
-
-- **Contexto:** acabou de receber o laudo
-- **Casos de uso:** entender o próprio risco, saber se familiares devem testar, decidir quando procurar especialista
-- **Limite:** nunca recebe diagnóstico ou prescrição
-
-### Clínico
-
-- **Contexto:** está atendendo o paciente, com pouco tempo
-- **Casos de uso:** identificar achados acionáveis, comparar com guidelines
-
-### Time interno DASA / Genera
-
-- **Contexto:** monitora o produto e identifica gaps no laudo atual
-- **Casos de uso:** dashboards agregados de uso e feedback
-
----
-
-## Visão geral da arquitetura
-
-A solução é dividida em **dois fluxos** com responsabilidades claras.
-
-### Fluxo 1 · Ingestão
-
-> Roda uma vez por laudo, assíncrona.
-
-```mermaid
-flowchart TD
-    A[PDF do laudo] --> B[Processamento e<br/>identificação de seções]
-    B --> C[Indexação para<br/>busca semântica]
-    B --> D[Estruturação dos<br/>achados clínicos]
-    C --> E[(Índice de busca)]
-    D --> F[(Base estruturada)]
-    
-    classDef store fill:#e1f5ff,stroke:#0277bd,stroke-width:2px,color:#000
-    class E,F store
+# 5. Front, em outro terminal
+cd apps/web && pnpm install && pnpm dev           # http://localhost:5173
 ```
 
-### Fluxo 2 · Consulta
+O Postgres escuta em **5433** no host, para não colidir com instalações locais.
 
-> Roda toda vez que o usuário pergunta, síncrono.
+### Verificando a qualidade das respostas
 
-```mermaid
-flowchart TD
-    U([Pergunta]) --> R{Roteador}
-    R --> S[Busca relevante<br/>no laudo]
-    S --> LLM[Geração da resposta<br/>com guardrails clínicos]
-    LLM --> RESP([Resposta com<br/>referência à fonte])
-    
-    classDef io fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
-    class U,RESP io
+```bash
+cd apps/api
+uv run pytest tests/                              # rápido, sem API
+uv run python ../../scripts/run_golden.py         # 12 casos contra o agente real
 ```
 
-### Princípios da arquitetura
+O segundo gera [`docs/golden-cases.md`](docs/golden-cases.md) com as respostas na íntegra.
 
-| Princípio | Como se manifesta |
+## Estrutura
+
+```
+decifra/
+├── apps/
+│   ├── api/                     FastAPI + LangChain
+│   │   ├── src/decifra/
+│   │   │   ├── shared/          llm, vectorstore, db
+│   │   │   └── features/
+│   │   │       ├── reports/     PDF → JSON → Qdrant, resumo automático
+│   │   │       ├── chat/        agente, middleware, streaming
+│   │   │       └── safety/      verificação de fronteira clínica
+│   │   └── tests/
+│   └── web/                     Vite + React + shadcn/ui
+│       └── src/features/        dashboard, chat, report
+├── data/reports/                inbox → processed, estruturados
+├── docs/                        documentação técnica
+├── scripts/                     geração de laudos, ingestão, avaliação
+└── compose.yml
+```
+
+Colocação por feature, não por camada. Feature nova é pasta nova em `features/`; só sobe para `shared/` o que já tem dois consumidores reais.
+
+## Stack
+
+| Camada | Escolha | Por quê |
+|---|---|---|
+| Parsing | Docling | O laudo é tabela, e a coluna a que um valor pertence *é* o significado dele |
+| Orquestração | LangChain + LangGraph 1.x | Middleware como ponto de inserção dos guardrails |
+| LLM | OpenAI `gpt-5.6-terra` e `gpt-5.6-luna` | Terra para resposta fundamentada, Luna para classificação e resumo |
+| Vetorial | Qdrant | Filtro por payload isola laudo por paciente |
+| Relacional | Postgres | Memória de conversa via checkpointer do LangGraph |
+| Front | Vite + React + shadcn/ui | O backend é FastAPI; SSR não teria uso e SEO é indesejado |
+
+Justificativa completa de cada decisão em [Arquitetura](docs/architecture.md).
+
+## Documentação
+
+| Documento | Conteúdo |
 |---|---|
-| Rastreabilidade | Toda resposta cita a página do laudo de onde veio |
-| Defesa em camadas | Validação na entrada e na saída |
-| Auditabilidade | Toda consulta é registrada para revisão posterior |
-| Reversibilidade | Pipeline de esquecimento permite remoção completa de dados de um paciente |
+| [Arquitetura de IA](docs/architecture.md) | Pipeline, RAG, escolha de modelo, chunking, streaming |
+| [Governança e riscos](docs/governance.md) | LGPD, limites do agente, guardrails em camadas, política de falha |
+| [Decisões de experiência](docs/ux-decisions.md) | Dashboard, comunicação de risco, UX do chat, acessibilidade |
+| [Proveniência dos dados](docs/data-sources.md) | O que é real e o que é sintético nos laudos, com referências |
+| [Testes de qualidade](docs/golden-cases.md) | Os 12 casos e as respostas geradas |
 
----
+## Dados
 
-## Governança e compliance
+Apenas laudos **sintéticos**, em `data/reports/`. Os PDFs são gerados por script: o conteúdo vive versionado em `scripts/synthetic_reports.py`, o PDF renderizado não.
 
-### Categoria do dado
-
-Genética é **categoria especial pela LGPD**. Adiciona requisitos sobre:
-
-- Coleta com finalidade específica
-- Armazenamento por tempo limitado
-- Direito ao esquecimento
-- Consentimento explícito e revogável
-
-### Controles propostos
-
-| Controle | Descrição |
-|---|---|
-| Identificação do paciente | Anonimização em logs e traces |
-| Encryption at rest | Padrão de mercado em todos os armazenamentos |
-| Encryption in transit | TLS em todas as comunicações |
-| Auditoria | Registro completo de inferência com retenção apropriada |
-| Direito ao esquecimento | Pipeline de remoção em cascata |
-| Data residency | Cloud em região brasileira |
-| Treino com dado real | Não autorizado. Treino apenas com dado sintético. |
-
-### Guardrails da resposta
-
-A resposta da IA respeita regras clínicas não-negociáveis:
-
-- Nunca diagnostica
-- Nunca prescreve medicamento
-- Nunca afirma prognóstico
-- Sempre cita a fonte do laudo
-- Sempre marca incerteza quando a evidência é fraca
-- Sempre encaminha ao clínico em caso acionável
-
----
-
-## Roadmap
-
-### Sprint 1 (atual)
-
-- ✅ Proposta documentada
-- ✅ Arquitetura conceitual definida
-- ✅ Governança especificada
-
-### Sprint 2
-
-- Protótipo funcional sobre laudo sintético
-- Backend e frontend mínimos integrados
-- Pipeline de avaliação inicial
-
-### Sprint 3
-
-- Modos paciente e clínico separados
-- Dashboard de findings
-- Vídeo demo end-to-end
-- Métricas de avaliação consolidadas
-
-### Pós-Challenge
-
-A evolução posterior depende de acordo formal com DASA, aprovação ética e validação clínica.
-
----
-
-## Sobre dado real
-
-Esta proposta utiliza exclusivamente **dado sintético**. Implementação com laudo de paciente real exige:
-
-1. Acordo formal com DASA e Genera
-2. Aprovação ética via CEP/CONEP
-3. Validação clínica com especialistas
-
-Não é restrição arbitrária. É a única forma compatível com LGPD categoria especial e Resolução CFM.
-
----
-
-## Propriedade intelectual
-
-> ⚠️ **Importante.**
-
-Esta proposta é trabalho acadêmico autoral, registrado em repositório privado com data e autoria identificadas. A submissão à FIAP no contexto do Enterprise Challenge tem **finalidade exclusivamente avaliativa**.
-
-**Não constitui:**
-
-- Transferência de propriedade intelectual
-- Licença de uso comercial
-- Autorização de implementação por terceiros
-- Cessão de direitos sobre arquitetura, decisões técnicas ou metodologia descritas
-
-**Implementação ou incorporação parcial ou integral em produto comercial requer acordo formal específico com o autor**, conforme orientação acadêmica da própria FIAP no enunciado do Challenge:
-
-> *"A FIAP recomenda que, se o grupo pretende ir para além dessa simulação de atendimento de clientes reais por meio do programa Challenge Sprint, a ideia seja mantida em sigilo e não seja aplicada nas entregas desse enunciado."*
-
-O autor reserva o direito de desenvolver, comercializar ou licenciar esta solução de forma independente.
-
----
+Usar laudo de paciente real exigiria acordo formal com DASA e Genera, aprovação ética via CEP/CONEP e validação clínica. Não é restrição arbitrária: é a única forma compatível com a LGPD para dado genético, que é categoria especial.
 
 ## Autor
 
 **Luiz Felipe Alves Gomes** · RM 565151 · Turma A
+
+Ver [NOTICE.md](NOTICE.md) e [LICENSE.md](LICENSE.md) quanto a propriedade intelectual.
