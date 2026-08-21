@@ -1,91 +1,46 @@
-# Proprietary License — All Rights Reserved
+# Licença
 
-**Copyright © 2026 Luiz Felipe Alves Gomes. All rights reserved.**
+**Copyright © 2026 Luiz Felipe Alves Gomes.**
 
-This work, including but not limited to documentation, architecture, diagrams, methodology, technical decisions, and any derivative source code (the "Work"), is the exclusive property of Luiz Felipe Alves Gomes (the "Author") and is protected under:
+## Autoria
 
-- Lei nº 9.610/1998 (Brazilian Copyright Law)
-- Lei nº 9.609/1998 (Brazilian Software Law)
-- International copyright treaties applicable to the Federative Republic of Brazil
+| Campo | Valor |
+|---|---|
+| Autor | Luiz Felipe Alves Gomes |
+| RM | 565151 |
+| Instituição | FIAP — Faculdade de Informática e Administração Paulista |
+| Curso | Inteligência Artificial · 2º ano · Turma A · 2TIAOA · 2026/1 |
+| Atividade | Enterprise Challenge DASA · Sprints 1 a 3 |
+| Criação | 2026-05-04 |
+| Última entrega | 2026-08 (Sprint 3) |
 
-No license is granted by this document, except as explicitly stated in Section 4 below.
+## Contexto
 
----
+Esta obra foi submetida ao Enterprise Challenge DASA da FIAP, realizado em parceria com a Diagnósticos da América S.A. (DASA), com finalidade acadêmica.
 
-## 1. Authorship
+O autor **optou por concorrer** ao prêmio de melhor projeto no Festival NEXT e, portanto, aceita os termos de compartilhamento previstos no enunciado do Challenge, incluindo a possibilidade de a empresa parceira incorporar parte ou a integralidade da ideia em seus produtos.
 
-| Field | Value |
-| --- | --- |
-| Author | Luiz Felipe Alves Gomes |
-| Academic ID | RM 565151 |
-| Institution | FIAP — Faculdade de Informática e Administração Paulista |
-| Course | Inteligência Artificial · 2º ano · Turma A · 2TIAOA · 2026/1 |
-| Activity | Enterprise Challenge DASA · Sprints 1 to 3 |
-| Date of creation | 2026-05-04 |
-| Latest submission | 2026-08 (Sprint 3) |
+## Uso permitido
 
-## 2. Scope of Submission
+Ficam autorizados, sem necessidade de consulta prévia:
 
-The submission of this Work to FIAP, in the context of the Enterprise Challenge conducted in partnership with Diagnósticos da América S.A. (DASA), is made for **academic evaluation purposes only**.
+- Leitura, avaliação e discussão pedagógica por avaliadores, docentes e corpo técnico da FIAP
+- Avaliação e uso pela DASA e pela Genera no contexto do Challenge, conforme o enunciado
+- Citação acadêmica com atribuição ao autor
+- Estudo e reaproveitamento de trechos de código por terceiros, com atribuição
 
-This submission **does not constitute**:
+O pedido é simples: **cite a autoria**.
 
-a) Transfer of intellectual property or copyright;
-b) License to use, reproduce, distribute, or modify the Work;
-c) Authorization to incorporate the Work, in whole or in part, into any commercial product, service, platform, system, or solution;
-d) Authorization to incorporate the Work into non-commercial products without prior written consent of the Author;
-e) Authorization for implementation by third parties;
-f) Assignment of any rights over architecture, technical decisions, methodology, flows, diagrams, or ideas described herein.
+## Sobre os dados
 
-## 3. Reservation of Rights
+Todos os relatórios genéticos incluídos são **sintéticos**, gerados por script para fins de demonstração. Nenhum dado de paciente real foi utilizado, e a implementação sobre dado real exigiria acordo formal, aprovação ética via CEP/CONEP e validação clínica. Ver [`docs/governance.md`](docs/governance.md).
 
-The Author expressly reserves the right to:
+## Ausência de garantia
 
-a) Develop this solution independently;
-b) Commercialize this solution directly or through entities under his ownership;
-c) License this solution to third parties under terms to be defined;
-d) Pursue formal registration with competent authorities (INPI, Biblioteca Nacional, or equivalent);
-e) Pursue legal action against unauthorized use.
+A obra é fornecida "como está", sem garantia de qualquer natureza, expressa ou implícita, incluindo adequação a uma finalidade específica. Este é um projeto acadêmico: **não é dispositivo médico, não constitui aconselhamento de saúde e não deve ser usado em contexto clínico.**
 
-## 4. Permitted Use
+Em nenhuma hipótese o autor será responsabilizado por qualquer reivindicação, dano ou responsabilidade decorrente do uso da obra.
 
-Within the academic submission context, the following uses are **permitted**:
+## Legislação aplicável
 
-a) Reading by FIAP-designated evaluators, tutors, and faculty;
-b) Evaluation for the purpose of academic grading;
-c) Pedagogical discussion within an educational environment;
-d) Academic citation with proper attribution.
-
-## 5. Prohibited Use
-
-Without prior written authorization from the Author, the following uses are **expressly prohibited**:
-
-a) Total or partial reproduction outside the evaluation context;
-b) Distribution to third parties not involved in the academic evaluation;
-c) Incorporation into commercial products, services, or processes;
-d) Use for research, development, or training purposes that result in third-party products, services, or intellectual property;
-e) Use by DASA, Genera, their subsidiaries, affiliates, partners, suppliers, or contractors in any commercial, experimental, or research initiative.
-
-## 6. Acknowledgment of Institutional Guidance
-
-This proprietary protection is consistent with the guidance provided by FIAP in the Enterprise Challenge brief:
-
-> "A FIAP recomenda que, se o grupo pretende ir para além dessa simulação de atendimento de clientes reais por meio do programa Challenge Sprint, a ideia seja mantida em sigilo e não seja aplicada nas entregas desse enunciado."
-
-The Work is submitted at a level of detail appropriate for academic evaluation, with the Author's rights explicitly reserved.
-
-## 7. Disclaimer
-
-THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS IN THE WORK.
-
-## 8. Governing Law
-
-This license is governed by the laws of the Federative Republic of Brazil. Any dispute arising from this license shall be resolved in the courts of Belo Horizonte, Minas Gerais, Brazil.
-
-The invalidity or unenforceability of any provision shall not affect the validity or enforceability of the remaining provisions.
-
-## 9. Contact for Licensing
-
-Inquiries regarding licensing, partnership, acquisition, or commercial collaboration must be directed to the Author in formal written communication.
-
-**Email:** 68123616+luizgomesdev@users.noreply.github.com
+Lei nº 9.610/1998 (Direitos Autorais) e Lei nº 9.609/1998 (Software). Foro da comarca de São Paulo, SP.
