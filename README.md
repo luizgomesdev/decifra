@@ -100,6 +100,7 @@ Justificativa completa de cada decisão em [Arquitetura](docs/architecture.md).
 
 | Documento | Conteúdo |
 |---|---|
+| [Guia do projeto](docs/guia.md) | Visão geral em linguagem simples, com diagramas. **Comece por aqui** |
 | [Arquitetura de IA](docs/architecture.md) | Pipeline, RAG, escolha de modelo, chunking, streaming |
 | [Governança e riscos](docs/governance.md) | LGPD, limites do agente, guardrails em camadas, política de falha |
 | [Decisões de experiência](docs/ux-decisions.md) | Dashboard, comunicação de risco, UX do chat, acessibilidade |
