@@ -111,6 +111,16 @@ O SSE libera **um parágrafo verificado por vez**: os tokens acumulam num buffer
 
 Os eventos de etapa vêm dos updates do próprio grafo, então a linha de progresso descreve o que está acontecendo. Ela é ordenada e nunca retrocede: os updates chegam em lote e um progresso que anda para trás lê como defeito.
 
+## Resumos automáticos
+
+Duas superfícies, o mesmo tratamento.
+
+O **resumo do relatório** é gerado a partir dos achados estruturados, ordenados por relevância clínica, e reflete automaticamente qualquer laudo novo ingerido para o paciente. O **resumo da conversa** é regenerado a partir dos turnos guardados no checkpointer.
+
+Ambos passam pelo verificador de fronteira clínica antes de chegar à tela, com a mesma política de fail-closed do chat: são superfícies onde o modelo escreve sobre a saúde de alguém, e confiar só no prompt delas seria abrir pela lateral o buraco que o chat fechou.
+
+O prompt do resumo do relatório precisou de uma instrução explícita para nunca afirmar que a pessoa "tem" uma condição, mesmo quando o laudo classifica o resultado como compatível com ela.
+
 ## Memória
 
 O checkpointer do LangGraph sobre Postgres. Uma thread por sessão, com o `patient_id` compondo o `thread_id`, de modo que o isolamento do retrieval se reflete na memória e um paciente pode ter mais de uma conversa em vez de uma única eterna.

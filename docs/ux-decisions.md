@@ -74,6 +74,12 @@ A resposta leva dezenas de segundos. A linha de progresso mostra a etapa real ("
 
 O texto aparece por parágrafo, e cada parágrafo é verificado antes de ser exibido. O detalhe técnico está em [Arquitetura](architecture.md#streaming-com-verificação-por-parágrafo).
 
+### Recapitulação da conversa
+
+O botão "Resumo" recapitula a sessão em tópicos curtos, preservando números e páginas que apareceram. É regenerado a partir dos turnos guardados, não mantido incrementalmente: o checkpointer já é a fonte da verdade e um resumo incremental divergiria dela.
+
+Passa pelo mesmo verificador do chat. Um recap continua sendo o modelo escrevendo sobre a saúde de alguém.
+
 ### Citação que abre a fonte
 
 Nomear uma página é uma afirmação; mostrar a frase é evidência. Como o relatório já está carregado para o painel, o trecho não custa nada a mais e permite conferir a resposta sem sair da conversa.
@@ -96,6 +102,7 @@ Não auditado ainda: contraste medido, navegação completa por teclado e teste 
 
 - Frases curtas e vocabulário comum, seguindo a recomendação de *plain language* do estudo citado
 - Termo técnico do laudo é explicado na mesma frase em que aparece
+- **Glossário no lugar do termo**: "Gene" e "Genótipo" nos cards abrem a definição ao toque. O estudo lista glossário e definição de termos entre as mudanças pedidas após o teste de usabilidade. É popover e não tooltip porque tooltip não abre em toque, o que esconderia o glossário de todo leitor no celular
 - O texto da interface fica isolado em arquivos `content.ts`, o que permite revisar a redação sem ler código: relevante quando a redação é responsabilidade clínica, não estética
 
 ## Estilo visual

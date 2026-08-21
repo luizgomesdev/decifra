@@ -112,3 +112,22 @@ STAGES = [
 
 STAGE_ORDER = {node: index for index, (node, _) in enumerate(STAGES)}
 STAGE_LABELS = dict(STAGES)
+
+CONVERSATION_SUMMARY = {
+    "prompt": (
+        "Resuma a conversa abaixo entre uma pessoa e um assistente que explica o "
+        "relatório genético dela.\n\n"
+        "Regras:\n"
+        "- Escreva para a própria pessoa reler depois e lembrar do que foi tratado.\n"
+        "- No máximo 4 tópicos curtos, em português simples.\n"
+        "- Diga o que ela perguntou e o que ficou esclarecido, não repita a resposta "
+        "inteira.\n"
+        "- Preserve número e página quando tiverem aparecido.\n"
+        "- Não acrescente informação que não está na conversa.\n"
+        "- Não diagnostique, não preveja desfecho, não indique medicamento.\n\n"
+        "Conversa:\n{conversation}"
+    ),
+    "turn": "{role}: {text}",
+    "roles": {"user": "Pessoa", "assistant": "Assistente"},
+    "empty": "Ainda não há conversa para resumir.",
+}

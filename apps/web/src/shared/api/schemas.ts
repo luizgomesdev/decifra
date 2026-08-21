@@ -71,6 +71,12 @@ export const summarySchema = z.object({
   guard_flags: z.array(z.string()),
 })
 
+export const conversationSummarySchema = z.object({
+  summary: z.string(),
+  guard_flags: z.array(z.string()),
+  turns: z.number(),
+})
+
 export const citationSchema = z.object({
   title: z.string(),
   page: z.number(),

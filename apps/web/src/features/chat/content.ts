@@ -34,7 +34,9 @@ export const CHAT = {
     stop: 'Parar',
     retry: 'Perguntar de novo',
     edit: 'Editar pergunta',
-    newChat: 'Nova conversa',
+    newChat: 'Nova',
+    summary: 'Resumo',
+    hideSummary: 'Fechar',
   },
   citation: {
     trigger: 'Ver trecho',

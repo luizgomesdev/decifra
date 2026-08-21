@@ -2,10 +2,14 @@
 
 from langchain_core.documents import Document
 
+from decifra.features.chat import content as txt
 from decifra.features.chat.agent import build_agent
 from decifra.features.chat.middleware import PatientContext
 from decifra.features.chat.schemas import ChatAnswer, Citation, HistoryTurn
+from decifra.features.safety import content as safety_txt
+from decifra.features.safety.verifier import VerifierUnavailable, check_output
 from decifra.shared.db import new_session_id, thread_id_for
+from decifra.shared.llm import get_fast_model
 
 
 def citations_from(documents: list[Document]) -> list[Citation]:
@@ -54,3 +58,45 @@ def history(patient_id: str, session_id: str) -> list[HistoryTurn]:
         for message in messages
         if message.type in ("human", "ai") and message.text
     ]
+
+
+def summarise_conversation(patient_id: str, session_id: str) -> dict:
+    """Recaps a session so the person can pick it up later.
+
+    Regenerated from the stored turns rather than kept incrementally: the
+    checkpointer is already the source of truth, and an incremental summary
+    would drift from it.
+
+    Goes through the same verifier as every other generated text. A recap is
+    still the model writing about someone's health.
+    """
+    turns = history(patient_id, session_id)
+    if not turns:
+        return {"summary": txt.CONVERSATION_SUMMARY["empty"], "guard_flags": [], "turns": 0}
+
+    conversation = "\n".join(
+        txt.CONVERSATION_SUMMARY["turn"].format(
+            role=txt.CONVERSATION_SUMMARY["roles"][turn.role], text=turn.text
+        )
+        for turn in turns
+    )
+    model = get_fast_model(effort="low", verbosity="low")
+    text = model.invoke(txt.CONVERSATION_SUMMARY["prompt"].format(conversation=conversation)).text
+
+    try:
+        verdict = check_output(text)
+    except VerifierUnavailable:
+        return {
+            "summary": safety_txt.UNVERIFIED,
+            "guard_flags": ["verifier_unavailable"],
+            "turns": len(turns),
+        }
+
+    if verdict.crossed:
+        return {
+            "summary": safety_txt.UNVERIFIED,
+            "guard_flags": ["boundary_crossed"],
+            "turns": len(turns),
+        }
+
+    return {"summary": text, "guard_flags": [], "turns": len(turns)}

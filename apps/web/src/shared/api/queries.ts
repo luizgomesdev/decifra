@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { api } from './client'
 import {
   chatAnswerSchema,
+  conversationSummarySchema,
   historyTurnSchema,
   patientSchema,
   reportSchema,
@@ -16,6 +17,8 @@ export const queryKeys = {
   summary: (patientId: string) => ['summary', patientId] as const,
   history: (patientId: string, sessionId: string) =>
     ['history', patientId, sessionId] as const,
+  conversationSummary: (patientId: string, sessionId: string) =>
+    ['conversation-summary', patientId, sessionId] as const,
 }
 
 export function usePatients() {
@@ -53,6 +56,22 @@ export function useHistory(patientId: string | undefined, sessionId: string | un
         z.array(historyTurnSchema),
       ),
     enabled: Boolean(patientId && sessionId),
+  })
+}
+
+export function useConversationSummary(
+  patientId: string | undefined,
+  sessionId: string | undefined,
+  enabled: boolean,
+) {
+  return useQuery({
+    queryKey: queryKeys.conversationSummary(patientId ?? '', sessionId ?? ''),
+    queryFn: () =>
+      api.get(`/patients/${patientId}/sessions/${sessionId}/summary`, conversationSummarySchema),
+    // Only fetched when the panel is opened: it costs a model call and the
+    // recap is of no use while the person is still in the conversation.
+    enabled: enabled && Boolean(patientId && sessionId),
+    staleTime: 60 * 1000,
   })
 }
 

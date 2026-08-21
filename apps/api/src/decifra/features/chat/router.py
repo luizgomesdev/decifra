@@ -5,7 +5,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 from decifra.features.chat.schemas import ChatAnswer, HistoryTurn
-from decifra.features.chat.service import ask, history
+from decifra.features.chat.service import ask, history, summarise_conversation
 from decifra.features.chat.streaming import stream_answer
 from decifra.shared.db import new_session_id
 
@@ -25,6 +25,11 @@ def post_chat(patient_id: str, request: ChatRequest) -> ChatAnswer:
 @router.get("/sessions/{session_id}/messages")
 def get_history(patient_id: str, session_id: str) -> list[HistoryTurn]:
     return history(patient_id, session_id)
+
+
+@router.get("/sessions/{session_id}/summary")
+def get_session_summary(patient_id: str, session_id: str) -> dict:
+    return summarise_conversation(patient_id, session_id)
 
 
 @router.post("/chat/stream")

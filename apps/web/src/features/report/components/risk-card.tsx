@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { RiskFinding } from '@/shared/api/schemas'
 import { REPORT } from '../content'
+import { GlossaryTerm } from './glossary-term'
 import { stylesFor, toneFor } from '../risk-level'
 
 /**
@@ -39,11 +40,15 @@ export function RiskCard({
         </div>
         <dl className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <div className="flex gap-1">
-            <dt>{REPORT.card.gene}</dt>
+            <dt>
+              <GlossaryTerm term={REPORT.card.gene} />
+            </dt>
             <dd className="font-medium text-foreground">{finding.gene}</dd>
           </div>
           <div className="flex gap-1">
-            <dt>{REPORT.card.genotype}</dt>
+            <dt>
+              <GlossaryTerm term={REPORT.card.genotype} />
+            </dt>
             <dd className="font-medium text-foreground">{finding.genotype}</dd>
           </div>
         </dl>

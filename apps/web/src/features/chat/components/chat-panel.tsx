@@ -27,6 +27,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useHistory } from '@/shared/api/queries'
 import { Markdown } from '@/shared/ui/markdown'
 import { CapabilitiesCard } from './capabilities-card'
+import { ConversationSummary } from './conversation-summary'
 import { CitationList } from './citation-list'
 import { CHAT } from '../content'
 import { useChatStream } from '../use-chat-stream'
@@ -51,6 +52,7 @@ export function ChatPanel({
   const { data: history = [] } = useHistory(patientId, sessionId)
   const { state, send, stop, reset } = useChatStream(patientId, sessionId, remember)
   const [lastQuestion, setLastQuestion] = useState<string>()
+  const [showSummary, setShowSummary] = useState(false)
 
   const form = useForm<QuestionForm>({
     resolver: zodResolver(questionSchema),
@@ -82,25 +84,43 @@ export function ChatPanel({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <header className="flex items-start justify-between gap-2 border-b px-4 py-3">
-        <div>
-          <h2 className="text-sm font-medium">{CHAT.title}</h2>
-          <p className="text-xs text-muted-foreground">{CHAT.subtitle}</p>
+      <header className="space-y-2 border-b px-4 py-3">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="truncate text-sm font-medium">{CHAT.title}</h2>
+          {(history.length > 0 || showLive) && (
+            <div className="flex shrink-0 gap-0.5">
+              {history.length > 1 && sessionId && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs"
+                  aria-expanded={showSummary}
+                  onClick={() => setShowSummary((open) => !open)}
+                >
+                  {showSummary ? CHAT.actions.hideSummary : CHAT.actions.summary}
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs"
+                onClick={() => {
+                  clear()
+                  reset()
+                  setShowSummary(false)
+                }}
+              >
+                {CHAT.actions.newChat}
+              </Button>
+            </div>
+          )}
         </div>
-        {(history.length > 0 || showLive) && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="shrink-0 text-xs"
-            onClick={() => {
-              clear()
-              reset()
-            }}
-          >
-            {CHAT.actions.newChat}
-          </Button>
-        )}
+        <p className="text-xs text-muted-foreground">{CHAT.subtitle}</p>
       </header>
+
+      {showSummary && sessionId && (
+        <ConversationSummary patientId={patientId} sessionId={sessionId} />
+      )}
 
       <MessageScrollerProvider>
         <MessageScroller className="min-h-0 flex-1">
