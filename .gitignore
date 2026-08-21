@@ -1,11 +1,33 @@
+# Specs internas: artefato de processo, não fazem parte da entrega
+.spec/
+
+# Env
 .env
 .env.local
 .env.*.local
+
+# Python
 __pycache__/
 *.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node
 node_modules/
 dist/
-build/
+
+# Dados de container
+data/qdrant/
+data/postgres/
+
+# Laudos e estruturados são gerados por scripts versionados
+# (o conteúdo vive em scripts/synthetic_reports.py)
+data/reports/inbox/*.pdf
+data/reports/processed/*.pdf
+data/reports/structured/*.json
+
+# Editor / OS
 .DS_Store
 .idea/
 .vscode/
