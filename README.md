@@ -4,6 +4,8 @@ Camada de IA que traduz o relatório genético da Genera para linguagem que o pa
 
 > Enterprise Challenge DASA · FIAP · Graduação em IA
 
+> ⚠️ Projeto acadêmico com **dados sintéticos**. Não é produto, não é dispositivo médico e não substitui avaliação profissional. Ver [Governança](docs/governance.md).
+
 ---
 
 ## Vídeo de demonstração
