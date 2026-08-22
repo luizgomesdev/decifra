@@ -6,6 +6,12 @@ Camada de IA que traduz o relatório genético da Genera para linguagem que o pa
 
 ---
 
+## Vídeo de demonstração
+
+**[Assistir (5 min)](https://youtu.be/eXz8iwZeJ7w)** · demonstração do dashboard, do agente respondendo em linguagem simplificada e das salvaguardas de comunicação, com as decisões de interface explicadas.
+
+---
+
 ## O problema
 
 A Genera entrega informação genética de alto valor em PDFs longos, com linguagem técnica e tabelas densas. O paciente recebe e não consegue usar para decisão: não sabe o que é predisposição, confunde risco relativo com certeza, e não tem a quem perguntar às onze da noite.
@@ -98,6 +104,7 @@ Justificativa completa de cada decisão em [Arquitetura](docs/architecture.md).
 
 | Documento | Conteúdo |
 |---|---|
+| [Vídeo de demonstração](https://youtu.be/eXz8iwZeJ7w) | Apresentação de 5 minutos da experiência do usuário |
 | [Guia do projeto](docs/guia.md) | Visão geral em linguagem simples, com diagramas. **Comece por aqui** |
 | [Arquitetura de IA](docs/architecture.md) | Pipeline, RAG, escolha de modelo, chunking, streaming |
 | [Governança e riscos](docs/governance.md) | LGPD, limites do agente, guardrails em camadas, política de falha |
