@@ -3,6 +3,8 @@
 Camada de IA que traduz o relatório genético da Genera para linguagem que o paciente entende, sem perder a fidelidade ao documento original.
 
 > Enterprise Challenge DASA · FIAP · Graduação em IA
+>
+> Repositório: [github.com/luizgomesdev/decifra](https://github.com/luizgomesdev/decifra)
 
 > ⚠️ Projeto acadêmico com **dados sintéticos**. Não é produto, não é dispositivo médico e não substitui avaliação profissional. Ver [Governança](docs/governance.md).
 

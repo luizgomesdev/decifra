@@ -36,4 +36,4 @@ Todos os laudos são sintéticos. Nenhum dado de paciente real foi utilizado. Ve
 
 ## Contato
 
-**Luiz Felipe Alves Gomes** · 68123616+luizgomesdev@users.noreply.github.com
+**Luiz Felipe Alves Gomes** · [@luizgomesdev](https://github.com/luizgomesdev)
