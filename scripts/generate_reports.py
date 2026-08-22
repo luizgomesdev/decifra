@@ -116,7 +116,7 @@ def build_report(report: dict, styles: dict) -> list:
     story: list = []
     p = story.append
 
-    p(Paragraph("Relatório de Analise Genomica", styles["titulo"]))
+    p(Paragraph("Relatório de Análise Genômica", styles["titulo"]))
     p(Paragraph("Genera | Rede Dasa | Sequenciamento por microarray de SNPs", styles["subtitulo"]))
 
     p(
@@ -128,7 +128,7 @@ def build_report(report: dict, styles: dict) -> list:
                 ["Idade", f"{report['idade']} anos"],
                 ["Sexo", report["sexo"]],
                 ["Coleta", report["amostra"]],
-                ["Emissao", report["emissao"]],
+                ["Emissão", report["emissao"]],
             ],
             [5.5 * cm, 10.5 * cm],
             styles,
@@ -157,8 +157,8 @@ def build_report(report: dict, styles: dict) -> list:
     p(Paragraph("2. Predisposições a condições de saúde", styles["secao"]))
     p(
         Paragraph(
-            "Predisposição genética não e diagnóstico. Os valores abaixo indicam "
-            "probabilidade estatística em populações estudadas, e não previsao "
+            "Predisposição genética não é diagnóstico. Os valores abaixo indicam "
+            "probabilidade estatística em populações estudadas, e não previsão "
             "individual. Nenhum resultado deste relatório confirma ou exclui doença.",
             styles["corpo"],
         )
@@ -192,16 +192,16 @@ def build_report(report: dict, styles: dict) -> list:
         p(Spacer(1, 4))
 
     p(PageBreak())
-    p(Paragraph("3. Características e tracos", styles["secao"]))
+    p(Paragraph("3. Características e traços", styles["secao"]))
     p(
         Paragraph(
-            "Achados sem implicação clinica, de carater informativo.",
+            "Achados sem implicação clínica, de caráter informativo.",
             styles["corpo"],
         )
     )
     p(
         table(
-            [["Caracteristica", "Gene", "Variante", "Resultado"]]
+            [["Característica", "Gene", "Variante", "Resultado"]]
             + [list(t) for t in report["tracos"]],
             [4.5 * cm, 2.5 * cm, 4 * cm, 5 * cm],
             styles,
@@ -212,7 +212,7 @@ def build_report(report: dict, styles: dict) -> list:
     p(
         Paragraph(
             "Informação destinada ao profissional de saúde. Nenhuma medicação deve ser "
-            "iniciada, suspensa ou ajustada a partir deste relatório sem prescrição medica.",
+            "iniciada, suspensa ou ajustada a partir deste relatório sem prescrição médica.",
             styles["corpo"],
         )
     )

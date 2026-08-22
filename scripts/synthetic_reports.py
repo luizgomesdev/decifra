@@ -1,6 +1,6 @@
 """Source content for the synthetic reports.
 
-Two fictional patients with deliberately different profiles, só per-patient
+Two fictional patients with deliberately different profiles, so per-patient
 retrieval can actually be tested: if one leaks into the other, the content
 gives it away.
 
@@ -23,7 +23,7 @@ REPORTS = [
         "ancestralidade": {
             "resumo": (
                 "A composição genômica indica origem majoritariamente europeia, com "
-                "contribuição africana relevante e componente ameriundia menor, padrao "
+                "contribuição africana relevante e componente ameríndia menor, padrão "
                 "compatível com a formação populacional do Sudeste brasileiro."
             ),
             "componentes": [
@@ -32,7 +32,7 @@ REPORTS = [
                 ("Europa Italiana", "14,5%", "Sul da Itália"),
                 ("Ameríndia", "11,1%", "Populações do Brasil central"),
                 ("África Centro-Ocidental", "3,9%", "Angola e Congo"),
-                ("Oriente Medio", "1,5%", "Levante"),
+                ("Oriente Médio", "1,5%", "Levante"),
             ],
             "haplogrupo_materno": "L3e2b, linhagem materna de origem africana ocidental",
             "neandertal": "1,8% do genoma, dentro da média da população brasileira",
@@ -69,7 +69,7 @@ REPORTS = [
             {
                 "condicao": "Deficiência de folato e hiper-homocisteinemia",
                 "fonte": (
-                    "BMC Cardiovascular Disorders, 2025, coorte multietnica; PMC1074713, homocisteína e"
+                    "BMC Cardiovascular Disorders, 2025, coorte multiétnica; PMC1074713, homocisteína e"
                     " C677T"
                 ),
                 "gene": "MTHFR",
@@ -83,9 +83,9 @@ REPORTS = [
                 ),
                 "interpretacao": (
                     "O genótipo T/T reduz a atividade da enzima MTHFR, o que pode elevar "
-                    "homocisteína quando a ingestão de folato e baixa. E um achado comum: "
+                    "homocisteína quando a ingestão de folato é baixa. É um achado comum: "
                     "a prevalência do genótipo TT na população geral fica entre 5 e 10%, variando "
-                    "bastante entre populações. A atividade da enzima e cerca de 70% menor "
+                    "bastante entre populações. A atividade da enzima é cerca de 70% menor "
                     "que a do genótipo comum."
                 ),
                 "acao": (
@@ -94,12 +94,12 @@ REPORTS = [
                 ),
             },
             {
-                "condicao": "Doenca de Alzheimer de inicio tardio",
-                "fonte": ("Meta-análise de variantes APOE na America Latina, PMC12927995"),
+                "condicao": "Doença de Alzheimer de início tardio",
+                "fonte": ("Meta-análise de variantes APOE na América Latina, PMC12927995"),
                 "gene": "APOE",
                 "variante": "rs429358 / rs7412",
                 "genotipo": "e3/e3",
-                "risco": "Padrao",
+                "risco": "Padrão",
                 "risco_relativo": "1,0x, equivalente a população geral",
                 "risco_absoluto": "Sem elevação de risco atribuível a este gene.",
                 "interpretacao": (
@@ -134,10 +134,10 @@ REPORTS = [
             ("Cor dos olhos", "HERC2", "rs12913832 A/A", "Probabilidade alta de olhos castanhos"),
             ("Tipo de cabelo", "TCHH", "rs11803731 T/T", "Tendência a cabelo ondulado"),
             (
-                "Resposta ao exercicio",
+                "Resposta ao exercício",
                 "ACTN3",
                 "rs1815739 C/T",
-                "Perfil misto, forca e resistência",
+                "Perfil misto, força e resistência",
             ),
         ],
         "farmacogenetica": [
@@ -146,7 +146,7 @@ REPORTS = [
                 "CYP2C19",
                 "*1/*2",
                 "Metabolizador intermediário",
-                "Possível redução de eficácia. Decisao e exclusivamente do médico prescritor.",
+                "Possível redução de eficácia. Decisão é exclusivamente do médico prescritor.",
             ),
             (
                 "Varfarina",
@@ -174,7 +174,7 @@ REPORTS = [
         "ancestralidade": {
             "resumo": (
                 "A composição genômica indica origem predominantemente do Leste Asiático, "
-                "com contribuição europeia iberica, padrao compatível com descendência "
+                "com contribuição europeia iberica, padrão compatível com descendência "
                 "japonesa em familia miscigenada no Brasil."
             ),
             "componentes": [
@@ -245,8 +245,8 @@ REPORTS = [
                 ),
             },
             {
-                "condicao": "Doenca de Alzheimer de inicio tardio",
-                "fonte": ("Meta-análise de variantes APOE na America Latina, PMC12927995"),
+                "condicao": "Doença de Alzheimer de início tardio",
+                "fonte": ("Meta-análise de variantes APOE na América Latina, PMC12927995"),
                 "gene": "APOE",
                 "variante": "rs429358 / rs7412",
                 "genotipo": "e3/e4",
@@ -280,7 +280,7 @@ REPORTS = [
                 "variante": "rs1800562 (C282Y)",
                 "genotipo": "Heterozigoto (G/A)",
                 "risco": "Levemente aumentado",
-                "risco_relativo": "OR 4,1 para sobrecarga de ferro (IC 95%: 2,9 a 5,8), com penetrância clinica baixa",
+                "risco_relativo": "OR 4,1 para sobrecarga de ferro (IC 95%: 2,9 a 5,8), com penetrância clínica baixa",
                 "risco_absoluto": (
                     "Embora exista associação estatística com sobrecarga de ferro, portadores em "
                     "heterozigose raramente desenvolvem doença clinicamente relevante. Mesmo "
@@ -301,7 +301,7 @@ REPORTS = [
             ("Rubor facial ao álcool", "ALDH2", "rs671 G/A", "Rubor provável após álcool"),
             ("Cor dos olhos", "HERC2", "rs12913832 A/A", "Probabilidade alta de olhos castanhos"),
             ("Tipo de cerume", "ABCC11", "rs17822931 T/T", "Cerume seco, comum no Leste Asiático"),
-            ("Resposta ao exercicio", "ACTN3", "rs1815739 T/T", "Perfil orientado a resistência"),
+            ("Resposta ao exercício", "ACTN3", "rs1815739 T/T", "Perfil orientado a resistência"),
         ],
         "farmacogenetica": [
             (

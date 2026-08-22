@@ -5,6 +5,8 @@ so it goes through the same verifier as the chat instead of trusting its own
 prompt. Same failure policy too: unverified means undelivered.
 """
 
+import unicodedata
+
 from decifra.features.reports import content as txt
 from decifra.features.reports.schemas import GeneticReport, RiskFinding
 from decifra.features.safety import content as safety_txt
@@ -21,8 +23,19 @@ RISK_ORDER = {
 }
 
 
+def _fold(text: str) -> str:
+    """Strips accents so matching does not depend on how the report spells it.
+
+    Without this, "Compatível com intolerância" misses the "compativel" key and
+    the finding drops to the end of the list. The report is written by a human
+    and its accents are not a contract.
+    """
+    stripped = unicodedata.normalize("NFKD", text.strip().lower())
+    return "".join(c for c in stripped if not unicodedata.combining(c))
+
+
 def risk_sort_key(finding: RiskFinding) -> tuple[int, str]:
-    level = finding.risk_level.strip().lower()
+    level = _fold(finding.risk_level)
     for label, rank in RISK_ORDER.items():
         if level.startswith(label):
             return (rank, finding.condition)

@@ -1,0 +1,963 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Guia do projeto Decifra: o que o sistema faz e como evita falar besteira sobre a saúde de alguém.">
+<title>Como o Decifra funciona</title>
+
+<style>
+  /* Notion, dark mode. Cores oficiais deles, e a paleta inteira passa em
+     WCAG AA sobre o fundo (o vermelho #FF7369 dá 6,6:1).
+
+     Tratamento do Notion: callout é bloco de fundo cinza uniforme, sem barra
+     colorida na lateral; raio de 4px; borda quase invisível; espaçamento
+     generoso. A cor entra na palavra, não na moldura.
+
+     Tema único. Toda cor é pintada explicitamente para a página não herdar o
+     fundo do host. */
+  :root {
+    color-scheme: dark;
+
+    --ground: #191919;
+    --surface: #202020;
+    --surface-2: #2F2F2F;      /* gray_background do Notion */
+    --line: #2F2F2F;
+    --line-strong: #373737;
+
+    --ink: #D4D4D4;
+    --ink-soft: #B4B4B4;
+    --muted: #9B9B9B;
+
+    --accent: #FF7369;         /* red do Notion dark */
+    --accent-bright: #FF7369;
+    --amber: #CA9849;          /* yellow */
+    --amber-bg: #56452F;       /* yellow_background */
+    --green: #529E72;          /* green */
+    --stroke: #6E6E6E;
+
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif;
+    --mono: "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+
+    /* Tudo na largura da coluna. Testamos limitar o texto em 75ch e o
+       resultado ficou quebrado: bloco mais largo que parágrafo lê como
+       desalinhamento, não como respiro. Simetria ganhou do comprimento de
+       linha, que é decisão do Luiz depois de ver as duas versões na tela. */
+    --measure: 100%;
+
+    /* Escala de espaçamento. O princípio da proximidade manda o espaço DENTRO
+       de um grupo ser menor que o espaço ENTRE grupos: é isso que faz a
+       estrutura ser lida sem precisar ler as palavras. */
+    --space-1: 0.5rem;    /* entre itens de uma lista */
+    --space-2: 0.9rem;    /* dentro de um bloco */
+    --space-3: 1.5rem;    /* entre texto e bloco */
+    --space-4: 2.4rem;    /* entre parágrafos: 1,5x a entrelinha, por WCAG */
+    --space-5: 4rem;      /* entre seções */
+    --step--1: 0.875rem;
+    --step-0: 1rem;
+    --step-1: 1.125rem;
+    --step-2: 1.35rem;
+    --step-3: 1.6rem;
+    --step-4: 2.2rem;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    hyphens: none;
+    text-wrap: pretty;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: var(--step-0);
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    max-width: 82rem;
+    margin: 0 auto;
+    padding: 0 1.5rem 6rem;
+  }
+
+  @media (min-width: 60rem) {
+    .shell {
+      grid-template-columns: 15rem minmax(0, 1fr);
+      gap: 4rem;
+      padding-inline: 2.5rem;
+    }
+  }
+
+  /* ---------- cabeçalho ---------- */
+
+  header.masthead {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 4.5rem 0 2.5rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 3rem;
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  h1 {
+    font-family: var(--sans);
+    font-size: clamp(1.9rem, 4.5vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+
+  .standfirst {
+    max-width: var(--measure);
+    font-size: var(--step-1);
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ---------- sumário ---------- */
+
+  nav.toc {
+    display: none;
+  }
+
+  @media (min-width: 60rem) {
+    nav.toc {
+      display: block;
+      position: sticky;
+      top: 2.5rem;
+      align-self: start;
+      max-height: calc(100vh - 5rem);
+      overflow-y: auto;
+    }
+  }
+
+  nav.toc p {
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 0.9rem;
+  }
+
+  nav.toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  nav.toc a {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: var(--step--1);
+    line-height: 1.4;
+    display: block;
+    border-left: 2px solid var(--line);
+    padding-left: 0.85rem;
+  }
+
+  nav.toc a:hover,
+  nav.toc a:focus-visible {
+    color: var(--accent);
+    border-left-color: var(--accent-bright);
+  }
+
+  /* ---------- corpo ---------- */
+
+  main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    scroll-margin-top: 2rem;
+  }
+
+  /* Parágrafos consecutivos precisam de 1,5x a entrelinha entre si. O gap da
+     seção sozinho fica abaixo disso, então a margem completa a diferença. */
+  p + p { margin-top: calc(var(--space-4) - var(--space-3)); }
+
+  h2 {
+    font-family: var(--sans);
+    font-size: var(--step-3);
+    font-weight: 600;
+    line-height: 1.25;
+    margin: 0;
+    max-width: 100%;
+  }
+
+  h3 {
+    font-family: var(--sans);
+    font-size: var(--step-1);
+    font-weight: 600;
+    line-height: 1.35;
+    margin: var(--space-2) 0 0;
+    max-width: 100%;
+  }
+
+  p, ul, ol {
+    max-width: var(--measure);
+    margin: 0;
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  /* Justificar títulos abriria buracos entre palavras numa linha só. */
+  h1, h2, h3, figcaption, .eyebrow, .label { text-align: left; }
+
+  /* O rótulo dentro de um nó de diagrama é uma etiqueta, não um parágrafo:
+     justificar ali abre buracos enormes numa caixa estreita. */
+  .diagram svg p,
+  .diagram svg span,
+  .diagram svg div,
+  .diagram foreignObject * { text-align: center !important; }
+
+  ul, ol {
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  li::marker { color: var(--muted); }
+
+  strong { font-weight: 600; }
+
+  a { color: var(--accent); text-underline-offset: 3px; }
+
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    color: var(--accent);
+    background: var(--surface-2);
+    border: 0;
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+  }
+
+  /* ---------- destaques ---------- */
+
+  .why {
+    max-width: 100%;
+    background: var(--surface-2);
+    border: 0;
+    border-radius: 4px;
+    padding: 1.1rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .why .label {
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .why p { font-size: var(--step--1); line-height: 1.6; color: var(--ink-soft); }
+
+  .caution {
+    max-width: 100%;
+    background: var(--amber-bg);
+    border: 0;
+    border-radius: 4px;
+    padding: 1.1rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .caution .label {
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--amber);
+  }
+
+  .caution p { font-size: var(--step--1); line-height: 1.6; }
+
+  /* ---------- passos numerados ---------- */
+
+  ol.steps {
+    list-style: none;
+    padding: 0;
+    counter-reset: step;
+    gap: var(--space-3);
+  }
+
+  ol.steps > li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.95rem;
+    align-items: start;
+  }
+
+  ol.steps > li::before {
+    content: counter(step);
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  ol.steps h3 { margin: 0 0 0.25rem; }
+  ol.steps p { font-size: var(--step--1); color: var(--ink-soft); }
+
+  /* ---------- tabelas ---------- */
+
+  .table-wrap {
+    overflow-x: auto;
+    max-width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+
+  table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: var(--step--1);
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.7rem 0.95rem;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  /* Primeira coluna é rótulo, as demais dividem o resto igualmente. */
+  table th:first-child, table td:first-child { width: 32%; }
+
+  thead th {
+    background: var(--surface);
+    font-weight: 600;
+    font-size: var(--step--1);
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td { border-bottom: 0; }
+
+  td.num {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .ok { color: var(--green); font-weight: 500; }
+  .bad { color: var(--amber); font-weight: 500; }
+
+  /* ---------- diagramas ---------- */
+
+  .diagram {
+    max-width: 100%;
+    overflow-x: auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.5rem 1rem;
+  }
+
+  .diagram pre.mermaid {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    min-width: min-content;
+  }
+
+  /* O mermaid renderiza com paleta própria. Estes overrides amarram o SVG
+     aos mesmos tokens da página, que é o que faz o diagrama acompanhar o
+     tema claro e escuro em vez de ficar preso a uma paleta fixa. */
+
+  /* Teto de largura: sem ele o mermaid ou espreme o rótulo até ficar
+     ilegível, ou estica o diagrama por toda a coluna. */
+  /* O mermaid já define um max-width no próprio SVG, calculado a partir do
+     conteúdo. Sobrescrevê-lo estica o desenho e a altura escala junto. */
+  .diagram svg { height: auto; display: block; margin: 0 auto; }
+
+  .diagram svg .node rect,
+  .diagram svg .node circle,
+  .diagram svg .node ellipse,
+  .diagram svg .node polygon,
+  .diagram svg .node path {
+    fill: var(--surface-2) !important;
+    stroke: var(--line-strong) !important;
+    stroke-width: 1px !important;
+  }
+
+  .diagram svg .cluster rect {
+    fill: var(--ground) !important;
+    stroke: var(--line) !important;
+  }
+
+  .diagram svg .nodeLabel,
+  .diagram svg .nodeLabel p,
+  .diagram svg .cluster-label,
+  .diagram svg .cluster-label p,
+  .diagram svg span.nodeLabel {
+    color: var(--ink) !important;
+    fill: var(--ink) !important;
+    font-family: var(--sans) !important;
+    font-size: 13.5px !important;
+    line-height: 1.4 !important;
+  }
+
+  .diagram svg .edgePath path,
+  .diagram svg .flowchart-link {
+    stroke: var(--stroke) !important;
+    stroke-width: 1.4px !important;
+  }
+
+  .diagram svg .arrowheadPath,
+  .diagram svg marker path {
+    fill: var(--stroke) !important;
+    stroke: var(--stroke) !important;
+  }
+
+  .diagram svg .edgeLabel,
+  .diagram svg .edgeLabel p,
+  .diagram svg .edgeLabel span {
+    color: var(--ink-soft) !important;
+    fill: var(--ink-soft) !important;
+    background: var(--surface) !important;
+    font-family: var(--sans) !important;
+    font-size: 12.5px !important;
+  }
+
+  .diagram svg .edgeLabel rect,
+  .diagram svg .labelBkg {
+    fill: var(--surface) !important;
+    background: var(--surface) !important;
+    opacity: 1 !important;
+  }
+
+  figcaption {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-top: var(--space-2);
+    max-width: var(--measure);
+  }
+
+  figure { margin: 0; display: flex; flex-direction: column; }
+
+  /* ---------- terminal ---------- */
+
+  .terminal {
+    max-width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.1rem 1.3rem;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: var(--step--1);
+    line-height: 1.75;
+    white-space: pre;
+    color: var(--ink-soft);
+  }
+
+  .terminal .cmt { color: var(--muted); }
+
+  /* ---------- rodapé ---------- */
+
+  footer {
+    grid-column: 1 / -1;
+    text-align: left;
+    margin-top: 4rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--line);
+    font-size: var(--step--1);
+    color: var(--muted);
+    max-width: 100%;
+  }
+
+  a:focus-visible, :focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="shell">
+
+  <header class="masthead">
+    <span class="eyebrow">Challenge DASA · Sprint 3</span>
+    <h1>Como o Decifra funciona</h1>
+    <p class="standfirst">
+      Um guia em linguagem simples do que foi construído: o que o sistema faz,
+      como ele evita falar besteira sobre a saúde de alguém, e as escolhas por
+      trás de cada decisão.
+    </p>
+  </header>
+
+  <nav class="toc" aria-label="Sumário">
+    <p>Neste guia</p>
+    <ol>
+      <li><a href="#problema">O problema</a></li>
+      <li><a href="#solucao">O que o sistema faz</a></li>
+      <li><a href="#pipeline">Do PDF até a tela</a></li>
+      <li><a href="#pergunta">O que acontece ao perguntar</a></li>
+      <li><a href="#guardrails">Como evitamos besteira</a></li>
+      <li><a href="#escolhas">Escolhas que importam</a></li>
+      <li><a href="#numeros">O que foi testado</a></li>
+      <li><a href="#erros">Onde eu errei</a></li>
+      <li><a href="#rodar">Como rodar</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section id="problema">
+      <h2>O problema, em três frases</h2>
+      <p>
+        A Genera faz um teste de DNA e entrega o resultado num PDF longo, cheio de
+        tabelas e termos técnicos. A pessoa recebe, lê "risco relativo de 2,59x
+        para Alzheimer", e não faz ideia se deve se preocupar.
+      </p>
+      <p>
+        A dor não é do exame. É de <strong>não ter com quem conversar sobre ele</strong>
+        às onze da noite, quando o laudo chega.
+      </p>
+    </section>
+
+    <section id="solucao">
+      <h2>O que o sistema faz</h2>
+      <p>Cinco coisas, nessa ordem de importância:</p>
+      <ul>
+        <li>Organiza o laudo numa tela, com os riscos primeiro e o resumo no topo</li>
+        <li>Responde perguntas em português comum, sempre dizendo de qual página do laudo tirou a resposta</li>
+        <li>Escreve sozinho um resumo do relatório e outro da conversa</li>
+        <li>Recusa o que não pode responder, em vez de inventar</li>
+        <li>Nunca diagnostica, nunca indica remédio, nunca prevê o futuro</li>
+      </ul>
+
+      <div class="why">
+        <span class="label">Por que assim</span>
+        <p>
+          A regra do produto é que a IA não substitui o médico. Ela ajuda a entender
+          o documento e empurra a pessoa para o profissional certo. Tudo que você vai
+          ler abaixo existe para sustentar essa regra tecnicamente, não só na intenção.
+        </p>
+      </div>
+    </section>
+
+    <section id="pipeline">
+      <h2>Do PDF até a tela</h2>
+      <p>
+        Essa parte roda uma vez por laudo, antes de qualquer pessoa perguntar
+        qualquer coisa.
+      </p>
+
+      <figure>
+        <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+    A["PDF cai na pasta<br/>de entrada"] --> B["Docling lê o layout<br/>e reconstrói as tabelas"]
+    B --> C["IA extrai os dados,<br/>anotando a página de cada achado"]
+    C --> D[("Ficha estruturada<br/>do paciente")]
+    C --> E["Cada achado vira<br/>um pedaço de texto"]
+    E --> F[("Banco de busca<br/>Qdrant")]
+    D --> G["Tela do paciente"]
+    F --> G
+    B -.-> H["PDF é movido para<br/>a pasta processados"]
+</pre>
+        </div>
+        <figcaption>
+          Mover o arquivo para "processados" no fim é o que garante que rodar de
+          novo não duplique nada.
+        </figcaption>
+      </figure>
+
+      <ol class="steps">
+        <li>
+          <div>
+            <h3>Ler o PDF de verdade</h3>
+            <p>
+              Um leitor de texto comum devolve a tabela achatada numa linha só, e aí
+              a IA tem que adivinhar qual valor pertence a qual campo. O Docling
+              reconstrói a grade, então o modelo lê uma tabela de verdade. Ele também
+              informa em qual página cada coisa está, o que é melhor do que pedir para
+              a IA prestar atenção nisso.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Transformar em ficha</h3>
+            <p>
+              A IA lê o texto e preenche uma ficha com campos fixos: condição, gene,
+              genótipo, nível de risco, interpretação e página de origem. Se um campo
+              não existe no laudo, fica vazio. Ela não pode completar.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Quebrar em pedaços do tamanho certo</h3>
+            <p>
+              Cada achado vira exatamente um pedaço. Nunca meio achado. Isso importa
+              porque um corte no meio deixaria a busca devolver "risco 3x maior" sem a
+              frase seguinte, que diz que a maioria das pessoas nunca desenvolve a
+              condição.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Guardar com etiqueta de dono</h3>
+            <p>
+              Todo pedaço carrega o identificador do paciente. Toda busca filtra por
+              ele. É isso que impede o laudo de uma pessoa aparecer na conversa de outra.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="pergunta">
+      <h2>O que acontece quando alguém pergunta</h2>
+      <p>
+        A pergunta não vai direto para a IA. Ela passa por um caminho com saídas
+        laterais, e algumas perguntas nunca chegam ao fim.
+      </p>
+
+      <figure>
+        <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+    P(["Pergunta da pessoa"]) --> I{"Que tipo de<br/>pergunta é essa?"}
+    I -->|"Eu tenho a doença?"| R1(["Recusa pronta,<br/>escrita por humano"])
+    I -->|"Posso parar o remédio?"| R1
+    I -->|"Quando vou ter isso?"| R1
+    I -->|"Estou passando mal agora"| R2(["Orienta procurar<br/>o SAMU 192"])
+    I -->|"O que o laudo diz sobre X?"| B["Busca só no laudo<br/>dessa pessoa"]
+    B --> G["IA escreve a resposta"]
+    G --> V{"Outra IA confere:<br/>passou do limite?"}
+    V -->|"Passou"| R1
+    V -->|"Está apoiado no laudo?"| V2{"Confere de novo"}
+    V2 -->|"Não está"| R3(["Prefiro não responder"])
+    V2 -->|"Está"| OK(["Resposta com a página<br/>e o aviso legal"])
+</pre>
+        </div>
+        <figcaption>
+          Pedidos de diagnóstico, receita e previsão são barrados logo na entrada,
+          antes de gastar busca e modelo caro. A resposta é um texto fixo que uma
+          pessoa escreveu, então dá para auditar e não muda de uma vez para outra.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section id="guardrails">
+      <h2>Como o sistema evita falar besteira</h2>
+      <p>
+        São seis camadas. Cada uma existe porque a anterior não pega o caso dela.
+        A ordem é o que faz funcionar.
+      </p>
+
+      <figure>
+        <div class="diagram">
+<pre class="mermaid">
+flowchart TD
+    A1["1 · Barra pedido fora do limite"] --> A2["2 · Apaga CPF e e-mail digitados"]
+    A2 --> A3["3 · Busca sempre, sempre filtrada"]
+    A3 --> M(["a IA escreve a resposta"])
+    M --> D1["4 · Cruzou a linha clínica?"]
+    D1 --> D2["5 · Está apoiado no laudo?"]
+    D2 --> D3["6 · Cola o aviso legal"]
+</pre>
+        </div>
+        <figcaption>
+          As três primeiras protegem a entrada, antes da IA escrever. As três
+          últimas conferem a saída, independente do que foi pedido no prompt.
+        </figcaption>
+      </figure>
+
+      <div class="why">
+        <span class="label">A ideia central</span>
+        <p>
+          Instrução no prompt é pedido, não garantia. O modelo pode desobedecer. Por
+          isso a resposta é conferida <em>depois</em> de escrita, por outra IA que não
+          é a que escreveu, com uma única tarefa: isso virou ato médico?
+        </p>
+      </div>
+
+      <h3>Por que a conferência é feita por IA, e não por lista de palavras</h3>
+      <p>
+        A primeira versão usava uma lista de expressões proibidas. Para saber se
+        prestava, escrevi 18 formas realistas de um modelo cruzar a linha em
+        português e testei as duas abordagens.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Método</th><th>Pegou</th><th>Bloqueou frase correta</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Lista de palavras</td>
+              <td class="num bad">5 de 18</td>
+              <td class="num">não medido</td>
+            </tr>
+            <tr>
+              <td>Conferência por IA</td>
+              <td class="num ok">18 de 18</td>
+              <td class="num ok">0 de 7</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        A lista não enxergava coisas como "o senhor apresenta quadro compatível com
+        hemocromatose" ou "considere suspender o anticoagulante". O português tem
+        formas demais de afirmar um diagnóstico para caberem numa lista, e cada
+        escapada chega num paciente.
+      </p>
+
+      <div class="caution">
+        <span class="label">O preço disso</span>
+        <p>
+          Sem lista de palavras, não existe rede quando a API cai. Então a regra
+          virou: <strong>se a conferência não roda, nada é entregue</strong>. A pessoa
+          recebe "não consegui conferir a resposta antes de te mostrar". É pior de usar
+          e é o certo a fazer quando o assunto é a saúde de alguém.
+        </p>
+      </div>
+    </section>
+
+    <section id="escolhas">
+      <h2>Escolhas que importam</h2>
+
+      <h3>A busca não é uma ferramenta que a IA decide usar</h3>
+      <p>
+        Existe um jeito comum de montar isso em que a IA decide se vale a pena
+        consultar o documento. Aqui não. A busca roda sempre, antes de escrever, e o
+        paciente vem de fora, não da IA. Responder sobre o genoma de alguém sem ler o
+        laudo é a única coisa que esse sistema não pode fazer.
+      </p>
+
+      <h3>O texto aparece por parágrafo, não por palavra</h3>
+      <p>
+        A resposta demora. O jeito comum de resolver é mostrar as palavras conforme
+        são escritas. Só que aí a pessoa leria um texto que ainda não foi conferido.
+        Mostrar "você tem Alzheimer" por três segundos e apagar é pior do que fazer
+        esperar. Então cada parágrafo é conferido antes de aparecer. A espera caiu de
+        trinta segundos de tela parada para uns cinco.
+      </p>
+
+      <h3>Número em vez de gráfico de pizza</h3>
+      <p>
+        Fui atrás de um estudo de usabilidade de portal de resultado genético. Os
+        próprios pacientes pediram que os gráficos de pizza fossem trocados por
+        número. Por isso os cards de risco não têm gráfico nenhum.
+      </p>
+
+      <h3>Nenhum vermelho na tela</h3>
+      <p>
+        Vermelho quer dizer erro e emergência. Uma predisposição genética não é nem
+        uma coisa nem outra. Risco aumentado é âmbar, risco padrão é cinza. E o
+        número absoluto vem sempre colado no relativo, porque "3x" assusta e "2 a 5
+        em 1000 pessoas por ano" informa.
+      </p>
+
+      <h3>Duas coisas que decidi não fazer</h3>
+      <p>
+        As diretrizes de interação com IA da Microsoft recomendam personalizar a
+        experiência a partir do comportamento da pessoa. Não fiz. Traçar perfil de
+        alguém em cima de dado genético é justamente o que a LGPD trata como
+        categoria especial. Aqui a boa prática de interface briga com a governança,
+        e a governança ganha.
+      </p>
+    </section>
+
+    <section id="numeros">
+      <h2>O que foi testado, com número</h2>
+      <p>
+        Nada aqui é "deve funcionar". Tudo foi rodado e medido.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>O que</th><th>Resultado</th><th>O que isso quer dizer</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Perguntas de referência</td>
+              <td class="num ok">12 de 12</td>
+              <td>Ancestralidade, riscos, pergunta sem resposta no laudo, pedido de diagnóstico, de receita, de previsão e emergência</td>
+            </tr>
+            <tr>
+              <td>Violações clínicas barradas</td>
+              <td class="num ok">18 de 18</td>
+              <td>Sem bloquear nenhuma das 7 frases legítimas testadas</td>
+            </tr>
+            <tr>
+              <td>Vazamento entre pacientes</td>
+              <td class="num ok">0</td>
+              <td>Busquei, no contexto de um paciente, termos que só existem no laudo do outro</td>
+            </tr>
+            <tr>
+              <td>Resumo bloqueado por engano</td>
+              <td class="num ok">0 de 6</td>
+              <td>Eram 2 de 6 antes de calibrar a conferência</td>
+            </tr>
+            <tr>
+              <td>Testes automáticos</td>
+              <td class="num ok">4 de 4</td>
+              <td>Rodam em 1,5 segundo, sem gastar API</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Também abri a aplicação no navegador, em tela de computador e de celular.
+        Isso não é formalidade: três defeitos passaram por compilação e verificação
+        de tipos sem reclamar e só apareceram na tela.
+      </p>
+    </section>
+
+    <section id="erros">
+      <h2>Onde eu errei no caminho</h2>
+      <p>
+        Vale registrar, porque explica parte do tempo e porque alguns desses erros
+        são do tipo que volta.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>O erro</th><th>Como apareceu</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Inventei os números de risco dos laudos</td>
+              <td>Você perguntou de onde vinham. Fui verificar e três não se sustentavam</td>
+            </tr>
+            <tr>
+              <td>Misturei português e inglês no código</td>
+              <td>Você reclamou, eu corrigi pela metade, você reclamou de novo</td>
+            </tr>
+            <tr>
+              <td>Propus Next.js sem motivo</td>
+              <td>Você perguntou "por que não Vite?" e estava certo</td>
+            </tr>
+            <tr>
+              <td>Tela em branco</td>
+              <td>Faltava um componente envolvendo o chat. A compilação passava normalmente</td>
+            </tr>
+            <tr>
+              <td>O aviso legal sumia</td>
+              <td>Quando a última conferência bloqueava a resposta, ela saía sem o aviso</td>
+            </tr>
+            <tr>
+              <td>A ingestão reprocessaria para sempre</td>
+              <td>Eu checava o nome do arquivo, mas o registro é salvo pelo código do paciente</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="why">
+        <span class="label">Achado no caminho</span>
+        <p>
+          O leitor de PDF instalou uma versão do motor de IA feita para placa de vídeo
+          NVIDIA. Sua máquina não tem uma. Eram 3,8 GB de arquivo que nunca rodaria.
+          Trocando pela versão de processador comum, o ambiente caiu de 5,5 GB para 1,7 GB.
+        </p>
+      </div>
+    </section>
+
+    <section id="rodar">
+      <h2>Como rodar na sua máquina</h2>
+      <p>Precisa de Docker, uv, Node e pnpm instalados.</p>
+
+      <div class="terminal"><span class="cmt"># 1. bancos de dados</span>
+docker compose up -d
+
+<span class="cmt"># 2. sua chave da OpenAI</span>
+cp .env.example .env
+
+<span class="cmt"># 3. gerar os laudos e colocar na base</span>
+cd apps/api
+uv sync
+uv run python ../../scripts/generate_reports.py
+uv run python ../../scripts/ingest.py
+
+<span class="cmt"># 4. servidor</span>
+uv run uvicorn decifra.main:app --reload
+
+<span class="cmt"># 5. tela, em outro terminal</span>
+cd apps/web &amp;&amp; pnpm install &amp;&amp; pnpm dev</div>
+
+      <p>
+        A tela abre em <code>localhost:5173</code>. Para conferir a qualidade das
+        respostas, este comando roda as 12 perguntas de referência e escreve o
+        resultado em <code>docs/golden-cases.md</code>:
+      </p>
+
+      <div class="terminal">uv run python ../../scripts/run_golden.py</div>
+    </section>
+
+  </main>
+
+  <footer>
+    Decifra · Enterprise Challenge DASA · FIAP · Luiz Felipe Alves Gomes, RM 565151.
+    Todos os laudos usados são sintéticos. O sistema não é dispositivo médico e não
+    substitui avaliação profissional.
+  </footer>
+
+</div>
+
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true, theme: "base", securityLevel: "loose" });
+</script>
+</body>
+</html>
