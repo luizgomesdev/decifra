@@ -10,6 +10,7 @@ import { PatientPicker } from '@/features/dashboard/components/patient-picker'
 import { DASHBOARD } from '@/features/dashboard/content'
 import { Dashboard } from '@/features/dashboard/dashboard'
 import { usePatients } from '@/shared/api/queries'
+import { DESKTOP_QUERY, useMediaQuery } from '@/shared/use-media-query'
 
 /**
  * Two panes on a desktop, one plus a sheet on a phone.
@@ -23,6 +24,7 @@ export default function App() {
   const [patientId, setPatientId] = useState<string>()
   const [pendingQuestion, setPendingQuestion] = useState<string>()
   const [sheetOpen, setSheetOpen] = useState(false)
+  const isDesktop = useMediaQuery(DESKTOP_QUERY)
 
   useEffect(() => {
     if (!patientId && patients?.length) setPatientId(patients[0].patient_id)
@@ -30,7 +32,9 @@ export default function App() {
 
   function handleAsk(question: string) {
     setPendingQuestion(question)
-    setSheetOpen(true)
+    // No telão o chat já está visível ao lado: abrir a folha por cima
+    // esconderia justamente o card que originou a pergunta.
+    if (!isDesktop) setSheetOpen(true)
   }
 
   return (
@@ -56,7 +60,7 @@ export default function App() {
               />
               <SheetContent side="right" className="w-full p-0 sm:max-w-md">
                 <SheetTitle className="sr-only">{CHAT.title}</SheetTitle>
-                {patientId && (
+                {patientId && !isDesktop && (
                   <ChatPanel
                     patientId={patientId}
                     pendingQuestion={pendingQuestion}
@@ -76,7 +80,7 @@ export default function App() {
 
         <aside className="hidden w-[24rem] shrink-0 lg:block">
           <div className="sticky top-[4.5rem] h-[calc(100svh-6rem)] overflow-hidden rounded-lg border bg-card">
-            {patientId && (
+            {patientId && isDesktop && (
               <ChatPanel
                 patientId={patientId}
                 pendingQuestion={pendingQuestion}

@@ -84,7 +84,9 @@ export function ChatPanel({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <header className="space-y-2 border-b px-4 py-3">
+      {/* O botão de fechar do Sheet fica no canto superior direito, então o
+          cabeçalho reserva espaço à direita para as ações não colidirem. */}
+      <header className="space-y-2 border-b px-4 py-3 pr-12 lg:pr-4">
         <div className="flex items-center justify-between gap-2">
           <h2 className="truncate text-sm font-medium">{CHAT.title}</h2>
           {(history.length > 0 || showLive) && (
