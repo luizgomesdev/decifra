@@ -19,7 +19,7 @@ Camada de IA que traduz o relatório genético da Genera para linguagem que o pa
 | Sprint | Vídeo |
 |---|---|
 | Sprint 3, experiência do paciente | [Assistir (5 min)](https://youtu.be/eXz8iwZeJ7w) |
-| Sprint 4, produção e governança | a publicar |
+| Sprint 4, produção e governança | [Assistir (5 min)](https://youtu.be/VE39zJwp3LI) |
 
 ---
 
