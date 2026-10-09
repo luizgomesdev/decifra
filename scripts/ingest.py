@@ -18,9 +18,11 @@ same report under a new filename would be re-ingested forever.
 """
 
 import argparse
+import logging
 import sys
 import time
 from pathlib import Path
+from time import perf_counter
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api" / "src"))
@@ -28,6 +30,7 @@ sys.path.insert(0, str(REPO_ROOT / "apps" / "api" / "src"))
 from decifra.config import get_settings
 from decifra.features.reports.service import ingest_pdf
 from decifra.shared.db import close_pool
+from decifra.shared.logging import elapsed_ms, log_event
 
 POLL_SECONDS = 5
 
@@ -44,12 +47,31 @@ def ingest_new() -> int:
     destination = processed()
     destination.mkdir(parents=True, exist_ok=True)
 
+    pending = sorted(inbox().glob("*.pdf"))
+    log_event("ingest.started", reports=len(pending))
+
     count = 0
-    for pdf_path in sorted(inbox().glob("*.pdf")):
-        print(f"  ingerindo {pdf_path.name}...", flush=True)
-        report, chunks = ingest_pdf(pdf_path)
+    for pdf_path in pending:
+        started = perf_counter()
+        try:
+            report, chunks = ingest_pdf(pdf_path)
+        except Exception as error:  # noqa: BLE001 - any failure is a failed report, not a crash
+            # One bad report must not take the batch down: log it and move on.
+            log_event(
+                "ingest.failed",
+                report=pdf_path.name,
+                error=type(error).__name__,
+                duration_ms=elapsed_ms(started),
+            )
+            continue
         pdf_path.rename(destination / pdf_path.name)
-        print(f"  {report.patient_id}: {chunks} documentos indexados", flush=True)
+        log_event(
+            "ingest.report",
+            report=pdf_path.name,
+            patient_id=report.patient_id,
+            chunks=chunks,
+            duration_ms=elapsed_ms(started),
+        )
         count += 1
     return count
 
@@ -58,6 +80,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--watch", action="store_true", help="observa a pasta continuamente")
     args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     try:
         if not args.watch:
