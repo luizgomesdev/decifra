@@ -3,8 +3,15 @@ name: decifra
 # Deployed stack: same pieces as compose.yml plus the API and the built front.
 # Every secret comes from the .env file that lives only on the server.
 
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   qdrant:
+    logging: *logging
     image: qdrant/qdrant:v1.16.1
     restart: unless-stopped
     # Loopback only: the ingestion runs from a laptop through an SSH tunnel.
@@ -19,6 +26,7 @@ services:
       retries: 5
 
   postgres:
+    logging: *logging
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
@@ -34,6 +42,7 @@ services:
       retries: 5
 
   api:
+    logging: *logging
     build:
       context: .
       dockerfile: apps/api/Dockerfile
@@ -55,6 +64,7 @@ services:
         condition: service_healthy
 
   web:
+    logging: *logging
     build:
       context: .
       dockerfile: apps/web/Dockerfile

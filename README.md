@@ -10,11 +10,28 @@ Camada de IA que traduz o relatório genético da Genera para linguagem que o pa
 
 ---
 
-## Vídeo de demonstração
+## Em produção
 
-**[Assistir (5 min)](https://youtu.be/eXz8iwZeJ7w)** · demonstração do dashboard, do agente respondendo em linguagem simplificada e das salvaguardas de comunicação, com as decisões de interface explicadas.
+**[Abrir a aplicação](http://100.24.98.206)** · instância de demonstração na AWS, com laudos sintéticos. É HTTP sem domínio e fica no ar até a correção; se não responder, foi desligada para não gerar custo. Como está montada e como subir de novo: [deploy.md](docs/deploy.md).
+
+## Vídeos
+
+| Sprint | Vídeo |
+|---|---|
+| Sprint 3, experiência do paciente | [Assistir (5 min)](https://youtu.be/eXz8iwZeJ7w) |
+| Sprint 4, produção e governança | a publicar |
 
 ---
+
+## As quatro sprints
+
+**Sprint 1, estruturar o laudo.** O relatório da Genera chega como PDF longo, com tabelas densas. A primeira etapa transformou esse documento em dado estruturado, preservando a página de origem de cada achado, porque sem origem não há como responder nada de forma verificável.
+
+**Sprint 2, o agente com busca semântica.** Cada achado virou trecho indexado no Qdrant, isolado por paciente, e o agente passou a responder sobre o laudo recuperando os trechos certos em vez de inventar a partir do nome da doença.
+
+**Sprint 3, a experiência do paciente.** Dashboard com riscos, ancestralidade, características e farmacogenética; respostas em linguagem simples com citação de página; resumos automáticos; e as salvaguardas de comunicação, que recusam pedido de diagnóstico, prescrição e prognóstico, com política fail-closed.
+
+**Sprint 4, produção e governança.** A solução saiu da máquina local: roda numa instância EC2 com os quatro containers, tem `/health` checando cada dependência, registra um evento JSON por requisição sem gravar conteúdo de laudo, teve a qualidade medida em três execuções por caso e ganhou uma política de governança cobrindo LGPD, explicabilidade e logging.
 
 ## O problema
 
@@ -58,6 +75,13 @@ cd apps/web && pnpm install && pnpm dev           # http://localhost:5173
 
 O Postgres escuta em **5433** no host, para não colidir com instalações locais.
 
+### Observando a operação
+
+```bash
+curl -s localhost:8000/health | jq                 # dependências
+docker compose -f compose.prod.yml logs -f api     # um evento JSON por requisição
+```
+
 ### Verificando a qualidade das respostas
 
 ```bash
@@ -66,7 +90,7 @@ uv run pytest tests/                              # rápido, sem API
 uv run python ../../scripts/run_golden.py         # 12 casos contra o agente real
 ```
 
-O segundo gera [`docs/golden-cases.md`](docs/golden-cases.md) com as respostas na íntegra.
+O segundo roda cada caso três vezes e gera [`docs/golden-cases.md`](docs/golden-cases.md), com as respostas na íntegra, e [`docs/evaluation.md`](docs/evaluation.md), com o resumo. Na última execução, 11 dos 12 casos passaram nas três tentativas; o caso `diabetes` falhou uma vez, com o verificador clínico recusando uma resposta que deveria passar.
 
 ## Estrutura
 
@@ -115,6 +139,9 @@ Justificativa completa de cada decisão em [Arquitetura](docs/architecture.md).
 | [Decisões de experiência](docs/ux-decisions.md) | Dashboard, comunicação de risco, UX do chat, acessibilidade |
 | [Proveniência dos dados](docs/data-sources.md) | O que é real e o que é sintético nos laudos, com referências |
 | [Testes de qualidade](docs/golden-cases.md) | Os 12 casos e as respostas geradas |
+| [Avaliação do modelo](docs/evaluation.md) | Qualidade e consistência medidas em 3 execuções por caso |
+| [Política de governança de IA](docs/ai-governance-policy.md) | LGPD, explicabilidade, registro de eventos e política de falha |
+| [Deploy](docs/deploy.md) | Como a aplicação está no ar e como subir de novo |
 
 ## Dados
 
