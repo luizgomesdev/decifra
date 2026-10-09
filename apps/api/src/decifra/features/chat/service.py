@@ -1,7 +1,10 @@
 """Chat entry point."""
 
+from time import perf_counter
+
 from langchain_core.documents import Document
 
+from decifra.config import get_settings
 from decifra.features.chat import content as txt
 from decifra.features.chat.agent import build_agent
 from decifra.features.chat.middleware import PatientContext
@@ -10,6 +13,7 @@ from decifra.features.safety import content as safety_txt
 from decifra.features.safety.verifier import VerifierUnavailable, check_output
 from decifra.shared.db import new_session_id, thread_id_for
 from decifra.shared.llm import get_fast_model
+from decifra.shared.logging import elapsed_ms, log_event, new_request_id
 
 
 def citations_from(documents: list[Document]) -> list[Citation]:
@@ -31,12 +35,35 @@ def citations_from(documents: list[Document]) -> list[Citation]:
 
 def ask(question: str, patient_id: str, session_id: str | None = None) -> ChatAnswer:
     session_id = session_id or new_session_id()
-    result = build_agent().invoke(
-        {"messages": [{"role": "user", "content": question}]},
-        context=PatientContext(patient_id=patient_id),
-        config={"configurable": {"thread_id": thread_id_for(patient_id, session_id)}},
-    )
+    request_id = new_request_id()
+    started = perf_counter()
+
+    try:
+        result = build_agent().invoke(
+            {"messages": [{"role": "user", "content": question}]},
+            context=PatientContext(patient_id=patient_id),
+            config={"configurable": {"thread_id": thread_id_for(patient_id, session_id)}},
+        )
+    except Exception as error:
+        log_event(
+            "chat.failed",
+            request_id=request_id,
+            patient_id=patient_id,
+            error=type(error).__name__,
+            duration_ms=elapsed_ms(started),
+        )
+        raise
+
     refused = result.get("refused", False)
+    log_event(
+        "chat",
+        request_id=request_id,
+        patient_id=patient_id,
+        intent=result.get("intent", "report_question"),
+        refused=refused,
+        duration_ms=elapsed_ms(started),
+        model=get_settings().openai_reasoning_model,
+    )
     return ChatAnswer(
         session_id=session_id,
         answer=result["messages"][-1].text,

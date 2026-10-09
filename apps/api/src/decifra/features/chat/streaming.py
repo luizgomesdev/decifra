@@ -19,7 +19,9 @@ describes what is really happening rather than a decorative animation.
 import json
 import logging
 from collections.abc import Iterator
+from time import perf_counter
 
+from decifra.config import get_settings
 from decifra.features.chat import content as txt
 from decifra.features.chat.agent import build_agent
 from decifra.features.chat.middleware import PatientContext
@@ -27,6 +29,7 @@ from decifra.features.chat.service import citations_from
 from decifra.features.safety import content as safety_txt
 from decifra.features.safety.verifier import VerifierUnavailable, check_output
 from decifra.shared.db import thread_id_for
+from decifra.shared.logging import elapsed_ms, log_event, new_request_id
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +53,8 @@ def _verified(paragraph: str) -> bool:
 def stream_answer(question: str, patient_id: str, session_id: str) -> Iterator[str]:
     agent = build_agent()
     config = {"configurable": {"thread_id": thread_id_for(patient_id, session_id)}}
+    request_id = new_request_id()
+    started = perf_counter()
 
     yield _event("session", {"session_id": session_id})
 
@@ -103,8 +108,15 @@ def stream_answer(question: str, patient_id: str, session_id: str) -> Iterator[s
             released += buffer
             yield _event("delta", {"text": buffer})
 
-    except Exception:
+    except Exception as error:
         logger.exception("chat stream failed")
+        log_event(
+            "chat.failed",
+            request_id=request_id,
+            patient_id=patient_id,
+            error=type(error).__name__,
+            duration_ms=elapsed_ms(started),
+        )
         yield _event(
             "final", {"text": safety_txt.UNVERIFIED, "refused": True, "flags": [], "citations": []}
         )
@@ -112,6 +124,15 @@ def stream_answer(question: str, patient_id: str, session_id: str) -> Iterator[s
 
     state = agent.get_state(config).values
     message = state["messages"][-1]
+    log_event(
+        "chat",
+        request_id=request_id,
+        patient_id=patient_id,
+        intent=state.get("intent", "report_question"),
+        refused=state.get("refused", False),
+        duration_ms=elapsed_ms(started),
+        model=get_settings().openai_reasoning_model,
+    )
     yield _event(
         "final",
         {
