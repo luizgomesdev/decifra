@@ -21,6 +21,12 @@ class Settings(BaseSettings):
 
     reports_dir: Path = REPO_ROOT / "data" / "reports"
 
+    allowed_origins: str = "http://localhost:5173"
+
+    @property
+    def origins(self) -> list[str]:
+        return [origin.strip() for origin in self.allowed_origins.split(",") if origin.strip()]
+
 
 @lru_cache
 def get_settings() -> Settings:

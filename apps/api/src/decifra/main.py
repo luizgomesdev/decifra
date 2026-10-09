@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from decifra.config import get_settings
 from decifra.features.chat.router import router as chat_router
 from decifra.features.reports.router import router as reports_router
 from decifra.shared.db import close_pool
@@ -18,10 +19,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Decifra API", lifespan=lifespan)
 
-# The front runs on a different origin in development.
+# The front runs on another origin, local in development and the server address in production.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=get_settings().origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
