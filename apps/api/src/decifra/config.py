@@ -3,7 +3,19 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
+
+def repo_root(module_file: Path) -> Path:
+    """Where `.env` and the reports folder live.
+
+    In a checkout this file is at `apps/api/src/decifra/config.py`, four levels
+    below the repository. In the container the package sits at `/app/src/decifra`
+    and there is no repository above it.
+    """
+    parents = module_file.resolve().parents
+    return parents[4] if len(parents) > 4 else parents[2]
+
+
+REPO_ROOT = repo_root(Path(__file__))
 
 
 class Settings(BaseSettings):
